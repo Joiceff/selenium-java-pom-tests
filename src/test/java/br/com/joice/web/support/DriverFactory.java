@@ -6,6 +6,8 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 
+import java.util.Map;
+
 /**
  * Cria o WebDriver conforme as propriedades de execução:
  * -Dbrowser=chrome|firefox (padrão: chrome) e -Dheadless=true|false (padrão: true).
@@ -29,6 +31,12 @@ public final class DriverFactory {
         ChromeOptions options = new ChromeOptions();
         if (headless) options.addArguments("--headless=new");
         options.addArguments("--window-size=1366,768", "--no-sandbox", "--disable-dev-shm-usage");
+        // Evita o pop-up de "senha vazada" do Chrome, que bloqueia os cliques após o login
+        options.addArguments("--incognito", "--disable-features=PasswordLeakDetection");
+        options.setExperimentalOption("prefs", Map.of(
+                "credentials_enable_service", false,
+                "profile.password_manager_enabled", false,
+                "profile.password_manager_leak_detection", false));
         return new ChromeDriver(options);
     }
 }
